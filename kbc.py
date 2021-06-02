@@ -1,8 +1,5 @@
 from questions import QUESTIONS
-
-
 def isAnswerCorrect(question, answer):
-
     '''
     :param question: question (Type JSON)
     :param answer:   user's choice for the answer (Type INT)
@@ -10,18 +7,23 @@ def isAnswerCorrect(question, answer):
         True if the answer is correct
         False if the answer is incorrect
     '''
-
-    return True if answer == 2 else False      #remove this
-
-
+    temp=question["answer"]
+    print(temp)
+    return True if answer == temp else False
 def lifeLine(ques):
 
     '''
     :param ques: The question for which the lifeline is asked for. (Type JSON)
     :return: delete the key for two incorrect options and return the new ques value. (Type JSON)
     '''
-
-
+    op="option"+str(ques["answer"])
+    print(op)
+    count=2
+    for i in range(1,5):
+        if ques[op]!=ques["option"+str(i)] and count>0 :
+            count-=1
+            ques["option"+str(i)]="Incorrect"
+    return ques
 def kbc():
     '''
         Rules to play KBC:
@@ -47,28 +49,54 @@ def kbc():
     #  Display a welcome message only once to the user at the start of the game.
     #  For each question, display the prize won until now and available life line.
     # For now, the below code works for only one question without LIFE-LINE and QUIT checks
-
-    print(f'\tQuestion 1: {QUESTIONS[0]["name"]}' )
-    print(f'\t\tOptions:')
-    print(f'\t\t\tOption 1: {QUESTIONS[0]["option1"]}')
-    print(f'\t\t\tOption 2: {QUESTIONS[0]["option2"]}')
-    print(f'\t\t\tOption 3: {QUESTIONS[0]["option3"]}')
-    print(f'\t\t\tOption 4: {QUESTIONS[0]["option4"]}')
-    ans = input('Your choice ( 1-4 ) : ')
-
-    # check for the input validations
-
-    if isAnswerCorrect(QUESTIONS[0], int(ans) ):
-        # print the total money won.
-        # See if the user has crossed a level, print that if yes
-        print('\nCorrect !')
-
-    else:
-        # end the game now.
-        # also print the correct answer
-        print('\nIncorrect !')
-
-    # print the total money won in the end.
-
-
+    print("Welcome to game")
+    min1=0
+    sum=0
+    for i in range(0,15):
+        print(f'\tQuestion {1}: {QUESTIONS[i]["name"]}' )
+        print(f'\t\tOptions:')
+        print(f'\t\t\tOption 1: {QUESTIONS[i]["option1"]}')
+        print(f'\t\t\tOption 2: {QUESTIONS[i]["option2"]}')
+        print(f'\t\t\tOption 3: {QUESTIONS[i]["option3"]}')
+        print(f'\t\t\tOption 4: {QUESTIONS[i]["option4"]}')
+        ans = input('Your choice ( 1-4 ) : ')
+        if ans == "LIFELINE" :
+            print("\You have used your lifeline ")
+            QUESTIONS[i]=lifeLine(QUESTIONS[i])
+            print("\nThe New Options are")
+            print(f'\t\t\tOption 1: {QUESTIONS[i]["option1"]}')
+            print(f'\t\t\tOption 2: {QUESTIONS[i]["option2"]}')
+            print(f'\t\t\tOption 3: {QUESTIONS[i]["option3"]}')
+            print(f'\t\t\tOption 4: {QUESTIONS[i]["option4"]}')
+            ans = input('Your choice ( 1-4 ) : ')
+        # check for the input validations
+        if ans == "quit":
+            print("You have select a quit option")
+            break
+        if isAnswerCorrect(QUESTIONS[i], int(ans) ):
+            if i<4:
+                min1=0
+            elif i>3 and i<9:
+                min1=10000
+            else:
+                min1=320000
+            sum=sum+QUESTIONS[i]["money"]
+            # print the total money won.
+            # See if the user has crossed a level, print that if yes
+            print('\nCorrect !')
+            print("\nThe amount won until Now : ",sum)
+            if(i==4):
+                print("\nYou have crossed your 1st padhav minimum ammount you will win is ",min1)
+            if(i==9):
+                print("\nYou have crossed your 2nd padhav minimum ammount you will win is ",min1)
+        else:
+            # end the game now.
+            # also print the correct answer
+            print('\nIncorrect !')
+            print(f'\nCorrect as is : {QUESTIONS[i]["answer"]}')
+            print("\n You have Won : ",min1)
+            return
+        # print the total money won in the end.
+    res=max(min1,sum)
+    print("\nThe total money won : ",res)
 kbc()
